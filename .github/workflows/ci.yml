@@ -1,3 +1,4 @@
+
 name: SmartCI Pipeline
 
 on: [push, pull_request]
@@ -9,20 +10,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
+      - name: Cache Python packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-          python -m pip install pytest
 
       - name: Verify pytest
         run: python -m pytest --version
 
       - name: Run tests
-        run: python -m pytest -v
+        run: |
+          set -o pipefail
+          python -m pytest -v 2>&1 | tee build.log
