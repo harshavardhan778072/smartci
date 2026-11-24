@@ -1,4 +1,3 @@
-
 name: SmartCI Pipeline
 
 on: [push, pull_request]
@@ -21,6 +20,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           python -m pip install pytest
+
+      - name: Verify pytest
+        run: python -m pytest --version
 
       - name: Run tests
         run: python -m pytest -v
