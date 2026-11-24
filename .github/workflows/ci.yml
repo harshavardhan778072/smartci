@@ -31,10 +31,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-      - name: Verify pytest
-        run: python -m pytest --version
+      - name: Select test subset
+        id: select
+        run: |
+          python scripts/select_tests.py
 
-      - name: Run tests
+      - name: Run selected tests
         run: |
           set -o pipefail
-          python -m pytest -v 2>&1 | tee build.log
+          python -m pytest -v tests/ 2>&1 | tee build.log
